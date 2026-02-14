@@ -75,19 +75,21 @@ namespace nutshell
                     Console.WriteLine("Values can not be null");
                     return;
                 }
-
-                using var As = new Context();
-                var asset = new Asset
+                else
                 {
-                    Name = name,
-                    Value = value,
-                    OwnerId = ownerId,
+                    using var As = new Context();
+                    var asset = new Asset
+                    {
+                        Name = name,
+                        Value = value,
+                        OwnerId = ownerId,
 
 
-                };
-                As.Add(asset);
-                As.SaveChanges();
-                Console.WriteLine("Asset Added");
+                    };
+                    As.Add(asset);
+                    As.SaveChanges();
+                    Console.WriteLine("Asset Added");
+                }
             }
             
 
