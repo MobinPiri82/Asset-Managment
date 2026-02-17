@@ -1,4 +1,6 @@
-﻿using Microsoft.Identity.Client;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
 using NutShell;
 using System;
 using System.ComponentModel;
@@ -11,17 +13,43 @@ namespace nutshell
 
         static void Main(string[] args)
         {
-            Console.WriteLine("1 for add person,2 for add asset");
+            Console.WriteLine("1 for add person,2 for add asset, 3 for get owners and their assets");
             int select = int.Parse(Console.ReadLine());
-            if (select == 1)
+            switch (select)
             {
-                AddPerson();
-            }
-            if (select == 2)
-            {
-                AddAsset();
-            }
+                case 1:
+                    AddPerson();
+                    break;
+                case 2:
+                    AddAsset();
+                    break;
+                case 3:
+                    GetAll();
+                    break;
+                default:
 
+                case 4:
+                    //DeleteAsset();
+                    break;
+                    Console.WriteLine("Unvalid");
+                    break;
+            }
+            void GetAll()
+            {
+                using (var context = new Context())
+                {
+                    var persons = context.Persons.Include(p => p.Assets).ToList();
+                    foreach (var person in persons)
+                    {
+                        Console.Write($"{person.Name} has These assets ");
+                        foreach (var asset in person.Assets)
+                        {
+                            Console.WriteLine(asset.Name);
+                        }
+                    }
+                }
+
+            }
             void AddPerson()
             {
                 Console.WriteLine("Enter Name ");
@@ -30,25 +58,29 @@ namespace nutshell
                     "Name ");
                 string fatherName = Console.ReadLine();
                 Console.WriteLine("nationalId");
-                int nationalId = int.Parse(Console.ReadLine());
-                if (name == null || fatherName == null || nationalId == null)
-                { 
+                string nationalId = Console.ReadLine();
+                if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(fatherName) || string.IsNullOrEmpty(nationalId))
+                {
                     Console.WriteLine("Values can not be null");
                     return;
+
                 }
-                else
+
+
+                int intnationalId = int.Parse(nationalId);
+                using var Per = new Context();
+                var person = new Person
                 {
-                    using var Per = new Context();
-                    var person = new Person
-                    {
-                        Name = name,
-                        FatherName = fatherName,
-                        NationalID = nationalId
-                    };
-                    Per.Add(person);
-                    Per.SaveChanges();
-                    Console.WriteLine("Person Added");
-                }
+                    Name = name,
+                    FatherName = fatherName,
+                    NationalID = intnationalId
+
+                };
+                Per.Add(person);
+                Per.SaveChanges();
+                Console.WriteLine("Person Added");
+
+
             }
             void AddAsset()
             {
@@ -67,29 +99,31 @@ namespace nutshell
                 string name = Console.ReadLine();
 
                 Console.WriteLine("Value");
-                long value = long.Parse(Console.ReadLine());
+                string value = Console.ReadLine();
                 Console.WriteLine("Enter Asset Name Owner");
-                int ownerId = int.Parse(Console.ReadLine());
-                if (name == null || value == null || ownerId == null)
+                string ownerId = Console.ReadLine();
+                if (string.IsNullOrEmpty(name)|| string.IsNullOrEmpty(value) || string.IsNullOrEmpty(ownerId))
                 {
                     Console.WriteLine("Values can not be null");
                     return;
                 }
-                else
+
+
+                using var As = new Context();
+                var asset = new Asset
                 {
-                    using var As = new Context();
-                    var asset = new Asset
-                    {
-                        Name = name,
-                        Value = value,
-                        OwnerId = ownerId,
+                    Name = name,
+                    Value = long.Parse(value),
+                    OwnerId = int.Parse(ownerId)
 
 
-                    };
-                    As.Add(asset);
-                    As.SaveChanges();
-                    Console.WriteLine("Asset Added");
-                }
+                };
+                As.Add(asset);
+                As.SaveChanges();
+                Console.WriteLine("Asset Added");
+                
+                
+
             }
             
 
