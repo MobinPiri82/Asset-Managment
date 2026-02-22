@@ -13,6 +13,8 @@ namespace nutshell
 
         static void Main(string[] args)
         {
+            Func<int, int, int> sum = (a, b) => a + b;
+
             while (true)
             {
                 Console.WriteLine("1 for add person,2 for add asset, 3 for get owners and their assets");
@@ -39,7 +41,7 @@ namespace nutshell
             }
             void GetAll()
             {
-                using (var context = new Context())
+                using var context = new Context();
                 {
                     var persons = context.Persons.Include(p => p.Assets).ToList();
                     foreach (var person in persons)
@@ -118,8 +120,7 @@ namespace nutshell
                     Console.WriteLine("Invalid value");
                     return;
                 }
-                if (int.TryParse(valueInput,out int values))
-                    { }
+
                 if (!int.TryParse(ownerIdInput, out int ownerId))
                 {
                     Console.WriteLine("Invalid owner ID");
@@ -197,6 +198,10 @@ namespace nutshell
 
 
             //}
+
+
+
+
 
 
         }
