@@ -17,7 +17,7 @@ namespace nutshell
 
             while (true)
             {
-                Console.WriteLine("1 for add person,2 for add asset, 3 for get owners and their assets");
+                Console.WriteLine("1 for add person,2 for add asset,3 for deleting person ,4 for get owners and their assets");
                 int select = int.Parse(Console.ReadLine());
                 switch (select)
                 {
@@ -28,12 +28,12 @@ namespace nutshell
                         AddAsset();
                         break;
                     case 3:
-                        GetAll();
+                        Delete();
                         break;
                     default:
 
                     case 4:
-                        //DeleteAsset();
+                        GetAll();
                         break;
                         Console.WriteLine("Unvalid");
                         break;
@@ -46,11 +46,36 @@ namespace nutshell
                     var persons = context.Persons.Include(p => p.Assets).ToList();
                     foreach (var person in persons)
                     {
-                        Console.Write($"{person.Name} has These assets ");
+                        Console.WriteLine($"{person.Name} has These assets: ");
                         foreach (var asset in person.Assets)
                         {
                             Console.WriteLine(asset.Name);
                         }
+                    }
+                }
+
+            }
+            void Delete()
+            {
+                using var context = new Context();
+                {
+                    var persons = context.Persons.ToList();
+                    foreach(var person in persons)
+                    {
+                        Console.WriteLine($"{person.Name} with id = {person.Id}");
+                    }
+                    Console.WriteLine("Enter id who  you want to delete?");
+                    var DeletePerson = Console.ReadLine();
+                    if (!int.TryParse(DeletePerson, out int id))
+                        {
+                        Console.WriteLine("Enter Number");
+                        }
+                    
+                    var user = context.Persons.SingleOrDefault(p => p.Id == id);
+                    if(user != null)
+                    {
+                    context.Persons.Remove(user);
+                    context.SaveChanges();
                     }
                 }
 

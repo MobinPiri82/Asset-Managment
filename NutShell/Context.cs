@@ -27,7 +27,8 @@ namespace NutShell
             modelBuilder.Entity<Person>()
                 .HasMany(a => a.Assets)
                 .WithOne(p => p.Owner)
-                .HasForeignKey(a => a.OwnerId);
+                .HasForeignKey(a => a.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
